@@ -34,20 +34,10 @@ function Bomb({shouldTrow}) {
 
 test('calls reportError and renders that if there was a problem', () => {
   mockReportError.mockResolvedValueOnce({success: true})
+  // replaces the wrapping of <Bomb/> with <ErrorBoundary></ErrorBoundary>
+  const {rerender} = render(<Bomb />, {wrapper: ErrorBoundary})
 
-  const {rerender} = render(
-    <ErrorBoundary>
-      <Bomb />
-    </ErrorBoundary>,
-  )
-
-  expect(screen.queryByRole('alert')).not.toBeInTheDocument()
-
-  rerender(
-    <ErrorBoundary>
-      <Bomb shouldTrow={true} />
-    </ErrorBoundary>,
-  )
+  rerender(<Bomb shouldTrow={true} />)
   //to check out what really is error and info
   const error = expect.any(Error)
   //this is complicated
@@ -58,17 +48,16 @@ test('calls reportError and renders that if there was a problem', () => {
   // are surpressed and nothing else
   expect(console.error).toHaveBeenCalledTimes(2)
   expect(screen.getByRole('alert')).toBeInTheDocument()
-
+  //
+  expect(screen.getByRole('alert').textContent).toMatchInlineSnapshot(
+    `"There was a problem."`,
+  )
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // resets the counter for console.error && Report
   console.error.mockClear()
   mockReportError.mockClear()
 
-  rerender(
-    <ErrorBoundary>
-      <Bomb />
-    </ErrorBoundary>,
-  )
+  rerender(<Bomb />)
 
   const btn = screen.getByRole('button', {name: /try again/i})
   expect(btn).toBeInTheDocument()
@@ -76,4 +65,9 @@ test('calls reportError and renders that if there was a problem', () => {
 
   expect(mockReportError).not.toHaveBeenCalled()
   expect(console.error).not.toHaveBeenCalled()
+
+  expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+  expect(
+    screen.queryByRole('button', {name: /try again/i}),
+  ).not.toBeInTheDocument()
 })
