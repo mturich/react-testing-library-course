@@ -1,36 +1,62 @@
 import React, {useState} from 'react'
+import {savePost} from './api'
 
-export function Editor() {
-  const [title, setTitle] = useState('')
+export function Editor({user}) {
+  const [disable, setDisable] = useState(false)
+  /*   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
   const [tags, setTags] = useState('')
-  const [disable, setDisable] = useState(false)
+  const [message, setMessage] = useState({})
+ 
+  useEffect(() => {
+    const msg = { title, content, tags: tags.split(',') }
+    setMessage(msg)
+  },[title, content, tags])
 
+ */
   function handleSubmit(e) {
     e.preventDefault()
     setDisable(true)
+    //savePost(message)
+    const {title, content, tags} = e.target.elements
+    // const title = e.target.elements.titleInput.value
+    // const content = e.target.elements.contentInput.value
+    // const tags = e.target.elements.tagsInput.value.split(',')
+    savePost({
+      authorId: user.id,
+      title: title.value,
+      content: content.value,
+      tags: tags.value.split(',').map((el) => el.trim()),
+    })
   }
 
   return (
     <form onSubmit={handleSubmit}>
-      <label htmlFor="title">Title</label>
+      <label htmlFor="titleInput">Title</label>
       <input
-        id="title"
+        id="titleInput"
         placeholder="title"
-        onChange={(e) => setTitle(e.target.value)}
-        value={title}
+        name="title"
+        //onChange={(e) => setTitle(e.target.value)}
+        //value={title}
       />
 
-      <label htmlFor="content">Content</label>
+      <label htmlFor="contentInput">Content</label>
       <textarea
-        id="content"
+        id="contentInput"
         placeholder="Whats up..."
-        onChange={(e) => setContent(e.target.value)}
-        value={content}
+        name="content"
+        //onChange={(e) => setContent(e.target.value)}
+        //value={content}
       />
 
-      <label htmlFor="tags">Tags</label>
-      <input id="tags" onChange={(e) => setTags(e.target.value)} value={tags} />
+      <label htmlFor="tagsInput">Tags</label>
+      <input
+        id="tagsInput"
+        name="tags"
+        //onChange={(e) => setTags(e.target.value)}
+        //value={tags}
+      />
 
       <button type="submit" disabled={disable}>
         Submit
