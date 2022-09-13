@@ -1,17 +1,28 @@
 import React from 'react'
-import {screen, render} from '@testing-library/react'
+import {screen, render as rtlRender} from '@testing-library/react'
 import {Router} from 'react-router-dom'
 import {createMemoryHistory} from 'history'
 import userEvent from '@testing-library/user-event'
 import {Main} from '../main'
 
-function browserWrapper({children}) {
-  const history = createMemoryHistory({initialEntries: ['/']})
-  return <Router history={history}>{children}</Router>
+//should be in an init file as global
+function render(
+  ui,
+  {
+    route = '/',
+    history = createMemoryHistory({initialEntries: [route]}),
+    ...renderOptions
+  } = {},
+) {
+  function Wrapper({children}) {
+    return <Router history={history}>{children}</Router>
+  }
+
+  return {...rtlRender(ui, {wrapper: Wrapper, ...renderOptions}), history}
 }
 
 test('if the router shows the correct pages', () => {
-  render(<Main />, {wrapper: browserWrapper})
+  render(<Main />)
   const linkHome = screen.getByRole('link', {name: /Home/i})
   const linkAbout = screen.getByRole('link', {name: /about/i})
 
@@ -31,4 +42,11 @@ test('if the router shows the correct pages', () => {
   expect(screen.getByRole('heading')).toHaveTextContent(/about/i)
   expect(screen.getAllByText('About')).toHaveLength(2)
   expect(screen.getByText(/You are on the about page/i)).toBeInTheDocument()
+})
+
+test('landing on a bad page shows no match component', () => {
+  render(<Main />, {route: '/wrongPath'})
+
+  expect(screen.getByRole('heading')).toHaveTextContent(404)
+  expect(screen.getByText(/no match/i)).toBeInTheDocument()
 })
