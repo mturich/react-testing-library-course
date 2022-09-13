@@ -4,17 +4,24 @@ import {screen, render as renderRTL} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {createStore} from 'redux'
 import {Provider} from 'react-redux'
-import {store as defaultStore} from '../redux-store'
+import {store as appStore} from '../redux-store'
 import {reducer} from '../redux-reducer'
 
 import {Counter} from '../redux-counter'
 
-function render(ui, {store = defaultStore, ...renderOptions} = {}) {
+function render(
+  ui,
+  {
+    initialState = 0,
+    store = createStore(reducer, {count: initialState}),
+    ...rtlOptions
+  } = {},
+) {
   function Wrapper({children}) {
     return <Provider store={store}>{children}</Provider>
   }
 
-  renderRTL(ui, {wrapper: Wrapper, ...renderOptions})
+  return {...renderRTL(ui, {wrapper: Wrapper, ...rtlOptions}), store}
 }
 
 test('the Counter redux component with defaults', () => {
@@ -41,8 +48,7 @@ test('the Counter redux component with defaults', () => {
 })
 
 test('can render redux with custom initial state', () => {
-  const arbitraryStore = createStore(reducer, {count: 3})
-  render(<Counter />, {store: arbitraryStore})
+  render(<Counter />, {initialState: 3})
 
   const count = screen.getByLabelText(/count/)
   expect(count).toHaveTextContent(3)
