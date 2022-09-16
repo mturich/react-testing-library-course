@@ -1,8 +1,9 @@
 import React from 'react'
 import {render, screen} from '@testing-library/react'
 // eslint-disable-next-line import/no-unresolved
-import {ErrorBoundary} from 'error-boundary'
 import userEvent from '@testing-library/user-event'
+
+import {ErrorBoundary} from '../error-boundary'
 //in this case it just mocks the reportError function
 //which is named concisely to increase understandability
 import {reportError as mockReportError} from '../api'
