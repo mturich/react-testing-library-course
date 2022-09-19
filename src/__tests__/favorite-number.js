@@ -1,7 +1,7 @@
 import React from 'react'
-import {fireEvent, render, screen} from '@testing-library/react'
+import {render, screen} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-const {FavoriteNumber} = require('favorite-number')
+const {FavoriteNumber} = require('../favorite-number')
 
 test('renders a number input with a label "Favorite Number"', () => {
   // eslint-disable-next-line no-unused-vars
@@ -13,21 +13,8 @@ test('renders a number input with a label "Favorite Number"', () => {
 
 test('RTL: renders a number input NEW SCREEN APPROACH with a label "Favorite Number"', () => {
   render(<FavoriteNumber />)
-  //screen.debug()
+
   expect(screen.getByLabelText(/favorite number/i)).toBeInTheDocument()
-})
-
-//-----------------------------
-
-//-----------------------------
-
-test('OLD FIRE EVENT: entering an invalid value shows an error mesasge', () => {
-  const {getByLabelText, getByRole} = render(<FavoriteNumber />)
-  // eslint-disable-next-line testing-library/prefer-screen-queries
-  const input = getByLabelText(/favorite number/i)
-  fireEvent.change(input, {target: {value: '10'}})
-  // eslint-disable-next-line testing-library/prefer-screen-queries
-  expect(getByRole('alert')).toHaveTextContent(/The number is invalid/i)
 })
 
 test('NEW USER EVENT: entering an invalid value shows an error mesasge', () => {
